@@ -17,9 +17,11 @@ OpenPrio proxy is setup by environment variablefs, in this repository an example
 
 ### CSV
 
-Expected order of fields:
-data_ownercode, block_code, vehicle_number, latitude (wsg84), longitude (wsg84), accuracy (m), speed (m/s), bearing (degrees), odometer (m), hdop, timestamp ( milliseconds since epoch), dooropeningstatus (see .proto), stopbuttonstatus (see .proto)\n
-Example:
-QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,1613652529565,0,1\n
+The content of the data that is provided by csv should use the same units as provided with a .proto file. The .proto file is therefor a good reference https://github.com/openprio/specification/blob/master/openprio_pt_position_data.proto (especially for the enum values).
+
+Expected order of fields:\
+data_ownercode, block_code, vehicle_number, latitude (wsg84), longitude (wsg84), accuracy (m), speed (m/s), bearing (degrees), odometer (m), hdop, timestamp ( milliseconds since epoch), dooropeningstatus (see .proto), stopbuttonstatus (see .proto)\n \
+Example:\
+QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,1613652529565,0,1\n\
 
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 
@@ -21,7 +20,6 @@ func processMessage(bytes []byte, dataFormat string) (openprio_pt_position_data.
 		err = proto.Unmarshal(bytes, &positionData)
 	}
 
-	log.Print(positionData)
 	return positionData, err
 }
 

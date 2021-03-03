@@ -20,7 +20,6 @@ type MQTTConfig struct {
 func createClientOptions(cfg MQTTConfig) *mqtt.ClientOptions {
 	opts := mqtt.NewClientOptions()
 	log.Print(cfg.MQTTHost)
-	log.Print("test")
 	opts.AddBroker(fmt.Sprintf("ssl://%s", cfg.MQTTHost))
 	opts.SetUsername(cfg.MQTTUsername)
 	opts.SetClientID(cfg.MQTTUsername)

@@ -7,7 +7,7 @@ import (
 
 	"openprio_proxy/openprio_pt_position_data"
 
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 func processMessage(bytes []byte, dataFormat string) (openprio_pt_position_data.LocationMessage, error) {
@@ -25,22 +25,32 @@ func processMessage(bytes []byte, dataFormat string) (openprio_pt_position_data.
 
 // ConvertCSV converts a CSV openprio message into a proto message.
 // format:
-// data_ownercode, block_code, vehicle_number, latitude, longitude, accuracy, speed, bearing, odometer, hdop, timestamp, dooropeningstatus, stopbuttonstatus\n
-// QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,1613652529565,0,1
+// data_ownercode, block_code, vehicle_number, latitude, longitude, accuracy, speed, bearing, odometer, hdop, timestamp, dooropeningstatus, stopbuttonstatus, driving_direction (nothing, A or B), number_of_vehicles_coupled, passage_stop_status\n
+// QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,1613652529565,0,1,A,1,0
 func ConvertCSV(data string) (openprio_pt_position_data.LocationMessage, error) {
 	positionData := openprio_pt_position_data.LocationMessage{}
 	data = strings.TrimRight(data, "\r\n")
 	values := strings.Split(data, ",")
-	if len(values) != 13 {
-		return positionData, fmt.Errorf("Number of fields in openprio CSV messages incorrect, it should be 13 but is %d", len(values))
+	if len(values) != 16 {
+		return positionData, fmt.Errorf("Number of fields in openprio CSV messages incorrect, it should be 16 but is %d", len(values))
 	}
 
 	blockCode, _ := strconv.ParseInt(values[1], 10, 32)
 	vehicleNumber, _ := strconv.ParseInt(values[2], 10, 32)
+	drivingDirection := openprio_pt_position_data.DrivingDirection(openprio_pt_position_data.DrivingDirection_UNDEFINED)
+	if values[14] == "A" {
+		drivingDirection = openprio_pt_position_data.DrivingDirection(openprio_pt_position_data.DrivingDirection_A_SIDE)
+	} else if values[14] == "B" {
+		drivingDirection = openprio_pt_position_data.DrivingDirection(openprio_pt_position_data.DrivingDirection_B_SIDE)
+
+	}
+	numberOfVehiclesCoupled, _ := strconv.ParseInt(values[13], 10, 32)
 	positionData.VehicleDescriptor = &openprio_pt_position_data.VehicleDescriptor{
-		DataOwnerCode: values[0],
-		BlockCode:     int32(blockCode),
-		VehicleNumber: int32(vehicleNumber),
+		DataOwnerCode:           values[0],
+		BlockCode:               int32(blockCode),
+		VehicleNumber:           int32(vehicleNumber),
+		DrivingDirection:        drivingDirection,
+		NumberOfVehiclesCoupled: int32(numberOfVehiclesCoupled),
 	}
 
 	latitude, _ := strconv.ParseFloat(values[3], 32)
@@ -65,6 +75,8 @@ func ConvertCSV(data string) (openprio_pt_position_data.LocationMessage, error) 
 	positionData.DoorStatus = openprio_pt_position_data.DoorOpeningStatus(doorOpeningStatus)
 	stopButtonStatus, _ := strconv.ParseInt(values[12], 10, 64)
 	positionData.StopButtonStatus = openprio_pt_position_data.StopButtonStatus(stopButtonStatus)
+	passageStopStatus, _ := strconv.ParseInt(values[15], 10, 64)
+	positionData.PassageStopStatus = openprio_pt_position_data.PassageStopStatus(passageStopStatus)
 
 	return positionData, nil
 }

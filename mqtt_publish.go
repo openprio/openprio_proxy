@@ -8,7 +8,7 @@ import (
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/kelseyhightower/envconfig"
-        "github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 type MQTTConfig struct {
@@ -22,7 +22,7 @@ func createClientOptions(cfg MQTTConfig) *mqtt.ClientOptions {
 	log.Print(cfg.MQTTHost)
 	opts.AddBroker(fmt.Sprintf("ssl://%s", cfg.MQTTHost))
 	opts.SetUsername(cfg.MQTTUsername)
-	opts.SetClientID(cfg.MQTTUsername)
+	// opts.SetClientID(cfg.MQTTUsername)
 	opts.SetPassword(cfg.MQTTPassword)
 	opts.SetAutoReconnect(true)
 	opts.SetConnectionLostHandler(onConnectionLostHandler)
@@ -34,7 +34,7 @@ func startMQTTPublisher(c <-chan openprio_pt_position_data.LocationMessage) {
 	var cfg MQTTConfig
 	err := envconfig.Process("", &cfg)
 	if err != nil {
-		log.Fatalf("Loading MQTTConfig went wrong:", err)
+		log.Fatalf("Loading MQTTConfig went wrong: %s", err)
 	}
 
 	mqttOpts := createClientOptions(cfg)
@@ -61,7 +61,7 @@ func startMQTTPublisher(c <-chan openprio_pt_position_data.LocationMessage) {
 				log.Print(t.Error())
 			}
 		}()
-                counter = counter + 1
+		counter = counter + 1
 		if time.Now().Sub(lastTimeReset) >= 1*time.Minute {
 			log.Printf("%d messages sent over MQTT since previous reset (normally 1 minute ago)", counter)
 			lastTimeReset = time.Now()

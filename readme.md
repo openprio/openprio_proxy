@@ -21,9 +21,9 @@ The content of the data that is provided by csv should use the same units as pro
 
 **Expected order of fields:**
 ```csv
-data_ownercode, block_code, vehicle_number, latitude (wsg84), longitude (wsg84), accuracy (m), speed (m/s), bearing (degrees), odometer (m), hdop, timestamp ( milliseconds since epoch), dooropeningstatus (see .proto), stopbuttonstatus (see .proto)\n
+data_ownercode, block_code, vehicle_number, latitude (wsg84), longitude (wsg84), accuracy (m), speed (m/s), bearing (degrees), odometer (m), hdop, timestamp ( milliseconds since epoch), dooropeningstatus (see .proto), stopbuttonstatus (see .proto), driving_direction (nothing, A or B), number_of_vehicles_coupled (see .proto), passage_stop_status (see .proto) \n
 ```
 **Example:**
 ```csv
-QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,1613652529565,0,1\n
+HTM,40,3105,52.0,5.1,4.0,3.1,130.3,13242,4,1613652529565,3,2,2,A,2\n
 ```

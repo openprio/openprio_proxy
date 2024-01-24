@@ -25,8 +25,8 @@ func processMessage(bytes []byte, dataFormat string) (openprio_pt_position_data.
 
 // ConvertCSV converts a CSV openprio message into a proto message.
 // format:
-// data_ownercode, block_code, vehicle_number, latitude, longitude, accuracy, speed, bearing, odometer, hdop, timestamp, dooropeningstatus, stopbuttonstatus, driving_direction (nothing, A or B), number_of_vehicles_coupled, passage_stop_status\n
-// QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,1613652529565,0,1,A,1,0
+// data_ownercode, block_code, vehicle_number, latitude (wsg84), longitude (wsg84), accuracy (m), speed (m/s), bearing (degrees), odometer (m), hdop, timestamp ( milliseconds since epoch), dooropeningstatus (see .proto), stopbuttonstatus (see .proto), number_of_vehicles_coupled (see .proto), driving_direction (nothing, A or B) passage_stop_status (see .proto) \n
+// QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,1613652529565,0,1,1,A,0
 func ConvertCSV(data string) (openprio_pt_position_data.LocationMessage, error) {
 	positionData := openprio_pt_position_data.LocationMessage{}
 	data = strings.TrimRight(data, "\r\n")

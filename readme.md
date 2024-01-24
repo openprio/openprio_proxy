@@ -21,7 +21,7 @@ The content of the data that is provided by csv should use the same units as pro
 
 **Expected order of fields:**
 ```csv
-data_ownercode, block_code, vehicle_number, latitude (wsg84), longitude (wsg84), accuracy (m), speed (m/s), bearing (degrees), odometer (m), hdop, timestamp ( milliseconds since epoch), dooropeningstatus (see .proto), stopbuttonstatus (see .proto), driving_direction (nothing, A or B), number_of_vehicles_coupled (see .proto), passage_stop_status (see .proto) \n
+data_ownercode, block_code, vehicle_number, latitude (wsg84), longitude (wsg84), accuracy (m), speed (m/s), bearing (degrees), odometer (m), hdop, timestamp ( milliseconds since epoch), dooropeningstatus (see .proto), stopbuttonstatus (see .proto), number_of_vehicles_coupled (see .proto), driving_direction (nothing, A or B) passage_stop_status (see .proto) \n
 ```
 **Example:**
 ```csv

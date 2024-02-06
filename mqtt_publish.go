@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
 	"openprio_proxy/openprio_pt_position_data"
@@ -24,6 +25,9 @@ func createClientOptions(cfg MQTTConfig) *mqtt.ClientOptions {
 	opts.SetUsername(cfg.MQTTUsername)
 	// opts.SetClientID(cfg.MQTTUsername)
 	opts.SetPassword(cfg.MQTTPassword)
+	opts.SetTLSConfig(&tls.Config{
+		InsecureSkipVerify: true,
+	})
 	opts.SetAutoReconnect(true)
 	opts.SetConnectionLostHandler(onConnectionLostHandler)
 	opts.SetReconnectingHandler(onReConnect)

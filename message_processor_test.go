@@ -9,14 +9,14 @@ import (
 )
 
 func TestConvertCSV(t *testing.T) {
-	got, err := ConvertCSV("QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,1613652529565,0,1,")
+	got, err := ConvertCSV("QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,2,1613652529565,0,1,")
 	if err == nil {
 		t.Error("Expected error.", got)
 	}
 }
 
 func TestConvertCSV_2(t *testing.T) {
-	got, err := ConvertCSV("QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,1613652529565,0,0,0,,0")
+	got, err := ConvertCSV("QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,-1,1613652529565,0,0,0,,0")
 	if err != nil {
 		t.Error("Expected no error")
 		return
@@ -30,13 +30,14 @@ func TestConvertCSV_2(t *testing.T) {
 			DrivingDirection:        openprio_pt_position_data.DrivingDirection(openprio_pt_position_data.DrivingDirection_UNDEFINED),
 		},
 		Position: &openprio_pt_position_data.Position{
-			Latitude:  52.0,
-			Longitude: 5.0,
-			Accuracy:  4.0,
-			Speed:     20,
-			Bearing:   194.3,
-			Odometer:  13242,
-			Hdop:      4,
+			Latitude:                   52.0,
+			Longitude:                  5.0,
+			Accuracy:                   4.0,
+			Speed:                      20,
+			Bearing:                    194.3,
+			Odometer:                   13242,
+			Hdop:                       4,
+			NumberOfReceivedSatellites: -1,
 		},
 		Timestamp:         1613652529565,
 		DoorStatus:        openprio_pt_position_data.DoorOpeningStatus(openprio_pt_position_data.DoorOpeningStatus_DOOR_OPENING_STATUS_NO_DATA),
@@ -50,7 +51,7 @@ func TestConvertCSV_2(t *testing.T) {
 }
 
 func TestConvertCSV_3(t *testing.T) {
-	got, err := ConvertCSV("QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,1613652529565,1,0,1,B,1\n")
+	got, err := ConvertCSV("QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,6,1613652529565,1,0,1,B,1\n")
 	if err != nil {
 		t.Error("Expected no error")
 	}
@@ -63,13 +64,14 @@ func TestConvertCSV_3(t *testing.T) {
 			NumberOfVehiclesCoupled: 1,
 		},
 		Position: &openprio_pt_position_data.Position{
-			Latitude:  52.0,
-			Longitude: 5.0,
-			Accuracy:  4.0,
-			Speed:     20,
-			Bearing:   194.3,
-			Odometer:  13242,
-			Hdop:      4,
+			Latitude:                   52.0,
+			Longitude:                  5.0,
+			Accuracy:                   4.0,
+			Speed:                      20,
+			Bearing:                    194.3,
+			Odometer:                   13242,
+			Hdop:                       4,
+			NumberOfReceivedSatellites: 6,
 		},
 		Timestamp:         1613652529565,
 		DoorStatus:        openprio_pt_position_data.DoorOpeningStatus(openprio_pt_position_data.DoorOpeningStatus_DOOR_OPENING_STATUS_CLOSED),
@@ -83,7 +85,7 @@ func TestConvertCSV_3(t *testing.T) {
 }
 
 func TestConvertCSV_4(t *testing.T) {
-	got, err := ConvertCSV("QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,1613652529565,3,2,2,A,2\r\n")
+	got, err := ConvertCSV("QBUZZ,40,6015,52.0,5.0,4.0,20,194.3,13242,4,8,1613652529565,3,2,2,A,2\r\n")
 	if err != nil {
 		t.Error("Expected no error")
 		return
@@ -97,13 +99,14 @@ func TestConvertCSV_4(t *testing.T) {
 			DrivingDirection:        openprio_pt_position_data.DrivingDirection(openprio_pt_position_data.DrivingDirection_A_SIDE),
 		},
 		Position: &openprio_pt_position_data.Position{
-			Latitude:  52.0,
-			Longitude: 5.0,
-			Accuracy:  4.0,
-			Speed:     20,
-			Bearing:   194.3,
-			Odometer:  13242,
-			Hdop:      4,
+			Latitude:                   52.0,
+			Longitude:                  5.0,
+			Accuracy:                   4.0,
+			Speed:                      20,
+			Bearing:                    194.3,
+			Odometer:                   13242,
+			Hdop:                       4,
+			NumberOfReceivedSatellites: 8,
 		},
 		Timestamp:         1613652529565,
 		DoorStatus:        openprio_pt_position_data.DoorOpeningStatus(openprio_pt_position_data.DoorOpeningStatus_DOOR_OPENING_STATUS_RELEASED),

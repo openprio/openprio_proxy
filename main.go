@@ -2,12 +2,14 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"net"
 	"time"
 
-	"github.com/kelseyhightower/envconfig"
 	"openprio_proxy/openprio_pt_position_data"
+
+	"github.com/kelseyhightower/envconfig"
 )
 
 func main() {
@@ -46,10 +48,11 @@ func startTCPServer(c chan<- openprio_pt_position_data.LocationMessage) {
 	}
 }
 
-func handleTCPConnection(conn net.Conn, dataFormat string, c chan<- openprio_pt_position_data.LocationMessage) {
-	timeoutDuration := 100 * time.Second
-	bufReader := bufio.NewReader(conn)
+var lastSavedPositions = map[string]*openprio_pt_position_data.Position{}
 
+func handleTCPConnection(conn net.Conn, dataFormat string, c chan<- openprio_pt_position_data.LocationMessage) {
+	timeoutDuration := 300 * time.Second
+	bufReader := bufio.NewReader(conn)
 	for {
 		conn.SetReadDeadline(time.Now().Add(timeoutDuration))
 		bytes, err := bufReader.ReadBytes('\n')
@@ -58,6 +61,18 @@ func handleTCPConnection(conn net.Conn, dataFormat string, c chan<- openprio_pt_
 			return
 		}
 		result, err := processMessage(bytes, dataFormat)
+
+		// Calculate bearing based on previous position.
+		key := fmt.Sprintf("%s:%d", result.VehicleDescriptor.GetDataOwnerCode(), result.VehicleDescriptor.GetVehicleNumber())
+		if previousPosition, ok := lastSavedPositions[key]; ok && result.Position.GetBearing() < 0 {
+			if result.GetPosition().GetSpeed() >= 1.0 {
+				result.Position.Bearing = BearingBetweenPositions(*previousPosition, *result.GetPosition())
+			} else {
+				result.Position.Bearing = previousPosition.Bearing
+			}
+		}
+		lastSavedPositions[key] = result.Position
+
 		if err != nil {
 			log.Print(err)
 		} else {

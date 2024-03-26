@@ -27,6 +27,7 @@ func createClientOptions(cfg MQTTConfig) *mqtt.ClientOptions {
 	opts.SetAutoReconnect(true)
 	opts.SetConnectionLostHandler(onConnectionLostHandler)
 	opts.SetReconnectingHandler(onReConnect)
+	opts.SetMaxReconnectInterval(time.Second * 5)
 	return opts
 }
 

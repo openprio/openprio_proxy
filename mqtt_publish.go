@@ -28,6 +28,9 @@ func createClientOptions(cfg MQTTConfig) *mqtt.ClientOptions {
 	opts.SetConnectionLostHandler(onConnectionLostHandler)
 	opts.SetReconnectingHandler(onReConnect)
 	opts.SetMaxReconnectInterval(time.Second * 5)
+	opts.SetWriteTimeout(time.Second * 5)
+	opts.SetKeepAlive(10 * time.Second)
+	opts.SetPingTimeout(5 * time.Second)
 	return opts
 }
 
@@ -68,9 +71,7 @@ func startMQTTPublisher(c <-chan openprio_pt_position_data.LocationMessage) {
 			lastTimeReset = time.Now()
 			counter = 0
 		}
-
 	}
-
 }
 
 func onReConnect(client mqtt.Client, c *mqtt.ClientOptions) {

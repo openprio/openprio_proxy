@@ -65,13 +65,17 @@ func handleTCPConnection(conn net.Conn, dataFormat string, c chan<- openprio_pt_
 		// Calculate bearing based on previous position.
 		key := fmt.Sprintf("%s:%d", result.VehicleDescriptor.GetDataOwnerCode(), result.VehicleDescriptor.GetVehicleNumber())
 		if previousPosition, ok := lastSavedPositions[key]; ok && result.Position.GetBearing() < 0 {
-			if result.GetPosition().GetSpeed() >= 1.0 {
-				result.Position.Bearing = BearingBetweenPositions(*previousPosition, *result.GetPosition())
+			newPosition := *result.GetPosition()
+			// update bearing when vehicle runs at least 1 m/s and when the distance since the previous point is at least 1.5m
+			if result.GetPosition().GetSpeed() >= 1.0 && flatEarthDistance(previousPosition.Latitude, previousPosition.Longitude, newPosition.Latitude, newPosition.Longitude) >= 1.5 {
+				result.Position.Bearing = BearingBetweenPositions(*previousPosition, newPosition, result.Position.Hdop)
+				lastSavedPositions[key] = result.Position
 			} else {
 				result.Position.Bearing = previousPosition.Bearing
 			}
+		} else {
+			lastSavedPositions[key] = result.Position
 		}
-		lastSavedPositions[key] = result.Position
 
 		if err != nil {
 			log.Print(err)

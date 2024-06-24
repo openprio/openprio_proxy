@@ -6,7 +6,7 @@ import (
 )
 
 func BearingBetweenPositions(coord1 openprio_pt_position_data.Position, coord2 openprio_pt_position_data.Position, hdop float32) float32 {
-	// make sure to set hdop on unknown when there is no good GPS measurement.
+	// make sure to set bearing on unknown when there is no good GPS measurement.
 	if hdop >= 10.0 {
 		return -1
 	}

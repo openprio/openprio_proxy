@@ -48,7 +48,7 @@ func startTCPServer(c chan<- openprio_pt_position_data.LocationMessage) {
 	}
 }
 
-var lastSavedPositions = map[string]*openprio_pt_position_data.Position{}
+var lastSavedPositions = map[string]*openprio_pt_position_data.LocationMessage{}
 
 func handleTCPConnection(conn net.Conn, dataFormat string, c chan<- openprio_pt_position_data.LocationMessage) {
 	timeoutDuration := 300 * time.Second
@@ -64,17 +64,38 @@ func handleTCPConnection(conn net.Conn, dataFormat string, c chan<- openprio_pt_
 
 		// Calculate bearing based on previous position.
 		key := fmt.Sprintf("%s:%d", result.VehicleDescriptor.GetDataOwnerCode(), result.VehicleDescriptor.GetVehicleNumber())
-		if previousPosition, ok := lastSavedPositions[key]; ok && result.Position.GetBearing() < 0 {
+		if previousLocationMessage, ok := lastSavedPositions[key]; ok && result.Position.GetBearing() < 0 {
+			// previousPosition
+			previousPosition := previousLocationMessage.Position
+			previousDrivingDirection := previousLocationMessage.VehicleDescriptor.DrivingDirection
+
+			// newPosition
 			newPosition := *result.GetPosition()
-			// update bearing when vehicle runs at least 1 m/s and when the distance from the previous point is at least 1.5m
-			if result.GetPosition().GetSpeed() >= 1.0 && flatEarthDistance(previousPosition.Latitude, previousPosition.Longitude, newPosition.Latitude, newPosition.Longitude) >= 1.5 {
+			newDrivingDirection := result.VehicleDescriptor.DrivingDirection
+			distance := flatEarthDistance(previousPosition.Latitude, previousPosition.Longitude, newPosition.Latitude, newPosition.Longitude)
+
+			// Turng bearing with 180deg if tram turns around and a bearing was set in previous locationMessage.
+			if previousPosition.Bearing >= 0.0 && newDrivingDirection != openprio_pt_position_data.DrivingDirection_UNDEFINED && previousDrivingDirection != openprio_pt_position_data.DrivingDirection_UNDEFINED && newDrivingDirection != previousDrivingDirection {
+				newBearing := (previousPosition.Bearing + 180.0)
+				if newBearing >= 360.0 {
+					newBearing = newBearing - 360.0
+				}
+				result.Position.Bearing = newBearing
+				lastSavedPositions[key] = &result
+			} else if result.GetPosition().GetSpeed() >= 1.0 && distance > 150 {
+				// Set bearing to unknown when position changes with >150m
+				result.Position.Bearing = -1
+				lastSavedPositions[key] = &result
+			} else if result.GetPosition().GetSpeed() >= 1.0 && ((newPosition.Hdop <= 1.0 && distance >= 1.5) || distance >= 5.0) {
+				// Update bearing when tram has some speed and moved over a certain distance depending on the quality of the GPS signal.
 				result.Position.Bearing = BearingBetweenPositions(*previousPosition, newPosition, result.Position.Hdop)
-				lastSavedPositions[key] = result.Position
+				lastSavedPositions[key] = &result
 			} else {
+				// Reuse earlier bearing
 				result.Position.Bearing = previousPosition.Bearing
 			}
 		} else {
-			lastSavedPositions[key] = result.Position
+			lastSavedPositions[key] = &result
 		}
 
 		if err != nil {

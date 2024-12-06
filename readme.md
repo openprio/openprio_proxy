@@ -2,11 +2,11 @@
 
 OpenPrio Proxy is a tool that can help transport operators to start share data with the OpenPrio message format. Sometimes it's difficult to add modern techniques like protocol buffers and mqtt clients into existing software, OpenPrio Proxy is created to support those systems. It should be run in an internal network and creates a bridge between the internal network and a public MQTT-broker. Data can be provided over a TCP-socket in CSV or protocol buffer (if your software support protocol buffers this is the preferred method) format.
 
-In the folder /examples you can find exmaple client implementations of this proxy.
+In the folder /examples you can find example client implementations of this proxy (right now Python is supported).
 
 ## Setup
 
-OpenPrio proxy is setup by environment variablefs, in this repository an example (.env_example) provided. All MQTT variables are required, the other variables are optional and have default values.
+OpenPrio proxy is setup by environment variables, in this repository an example (.env_example) provided. All MQTT variables are required, the other variables are optional and have default values.
 
 | Variable              | Description                                                                                               |    Default value |
 | --------------------- | --------------------------------------------------------------------------------------------------------- | ---------------: |
